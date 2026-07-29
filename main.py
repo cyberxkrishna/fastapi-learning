@@ -145,10 +145,10 @@ class UserResponse(BaseModel):
     name:str
     age:int
 
-@app.get("/user")
+@app.get("/user",response_model=UserResponse)
 def user():
     return{
         "name":"Krishna",
         "age":21,
-        "password":1235456
+        "password":2352
     }
