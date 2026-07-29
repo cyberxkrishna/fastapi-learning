@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI,status,HTTPException
 from pydantic import BaseModel
 app=FastAPI()
 
@@ -134,6 +134,9 @@ def delete_todo(todo_id:int):
     return{"Not found"}
 
 '''
+
+'''
+
 ##### RESPONSE MODEL #####
 
 class user(BaseModel):
@@ -149,6 +152,45 @@ class UserResponse(BaseModel):
 def user():
     return{
         "name":"Krishna",
-        "age":21,
+        "age":25,
         "password":2352
+    }
+
+'''
+
+
+##### STATUS CODE AND RESPONSES #####
+
+#here we have to import http
+@app.post("/create_user",status_code=status.HTTP_201_CREATED)
+def create_user():
+    return{
+        "User created"
+        }
+
+# custom response
+@app.get("/user")
+def get_user():
+    return{
+        "Message":"User created",
+        "Status":"Success",
+        "User":{
+            "Name":"Krishna",
+            "age":25
+        }
+    }
+
+# Error handling (here we have to import http exception)
+
+@app.get("/users/{user_id}")
+def get_users(user_id:int):
+    if user_id !=1:
+        raise HTTPException(
+            status_code=404,
+            detail="User not found"
+        )
+    return {
+        "user_id":user_id,
+        "Name":"Krishna",
+        "age":25
     }
