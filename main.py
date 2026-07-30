@@ -1,4 +1,5 @@
-from fastapi import FastAPI,status,HTTPException
+from fastapi import FastAPI,status,HTTPException,Request
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 app=FastAPI()
 
@@ -180,28 +181,14 @@ def get_user():
             "age":25
         }
     }
+'''
 
-# Error handling (here we have to import http exception)
-
-@app.get("/users/{user_id}")
-def get_users(user_id:int):
-    if user_id !=1:
-        raise HTTPException(
-            status_code=404,
-            detail="User not found"
-        )
-    return {
-        "user_id":user_id,
-        "Name":"Krishna",
-        "age":25
-    }
-    '''
 
 #### Exception handling ####
 
-# default exception
-
-app.get("/user/{user_id}")
+# Error handling (here we have to import http exception)
+'''
+@app.get("/user/{user_id}")
 def users(user_id:int):
     if user_id!=12:
         raise HTTPException(
@@ -213,3 +200,50 @@ def users(user_id:int):
             "name":"Krishna",
             "age":25
         }
+        '''
+    
+# custom error handling
+'''
+
+class UsersNotFound(Exception):
+    def __init__(self,name):
+        self.name=name
+
+@app.get("/users/{name}")
+def get_user(name:str):
+    if name !="CyberX":
+        raise UsersNotFound(name)
+    return{
+        "name":name
+    }
+
+    '''
+
+# global error handle
+
+
+class UserNotFound(Exception):
+    def __init__(self,name):
+        self.name=name
+
+
+@app.exception_handler(UserNotFound)
+def user_not_found(request:Request,exc:UserNotFound):
+    return JSONResponse(
+        status_code=404,
+        content={
+            "status":"error",
+            "Message":f"user {exc.name} not found"
+        }
+    )
+
+
+@app.get("/use/{name}")
+def get_use(name:str):
+    if name !="CyberX":
+        raise UserNotFound(name)
+    return{
+        "name":name
+    }
+    
+
