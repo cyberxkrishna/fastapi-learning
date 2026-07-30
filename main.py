@@ -161,6 +161,7 @@ def user():
 
 ##### STATUS CODE AND RESPONSES #####
 
+'''
 #here we have to import http
 @app.post("/create_user",status_code=status.HTTP_201_CREATED)
 def create_user():
@@ -194,3 +195,21 @@ def get_users(user_id:int):
         "Name":"Krishna",
         "age":25
     }
+    '''
+
+#### Exception handling ####
+
+# default exception
+
+app.get("/user/{user_id}")
+def users(user_id:int):
+    if user_id!=12:
+        raise HTTPException(
+            status_code=404,
+            detail="user not fouund"
+        )
+    else:
+        return{
+            "name":"Krishna",
+            "age":25
+        }
