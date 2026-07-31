@@ -1,4 +1,4 @@
-from fastapi import FastAPI,status,HTTPException,Request
+from fastapi import FastAPI,status,HTTPException,Request,Depends
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 app=FastAPI()
@@ -219,9 +219,10 @@ def get_user(name:str):
 
     '''
 
-# global error handle
 
+'''
 
+# global error handle(For this we have to import request from fastapi and from fastapi.responses import JSONResponse)
 class UserNotFound(Exception):
     def __init__(self,name):
         self.name=name
@@ -237,7 +238,6 @@ def user_not_found(request:Request,exc:UserNotFound):
         }
     )
 
-
 @app.get("/use/{name}")
 def get_use(name:str):
     if name !="CyberX":
@@ -246,4 +246,29 @@ def get_use(name:str):
         "name":name
     }
     
+'''
 
+##### Dependency Injection #####
+# we have to import Depends from fastapi
+
+def get_data():
+    return "Get data"
+
+@app.get("/data")
+def data(logic=Depends(get_data)):
+    return logic
+
+#reusable logic
+
+def get_profile():
+    return {
+        "user":"Guest"
+    }
+
+@app.get("/profile")
+def profile(name=Depends(get_profile)):
+    return name
+
+@app.get("/name")
+def name(info=Depends(get_profile)):
+    return info
