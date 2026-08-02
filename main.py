@@ -1,4 +1,4 @@
-from fastapi import FastAPI,status,HTTPException,Request,Depends
+from fastapi import FastAPI,status,HTTPException,Request,Depends,Header
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 app=FastAPI()
@@ -272,3 +272,24 @@ def profile(name=Depends(get_profile)):
 @app.get("/name")
 def name(info=Depends(get_profile)):
     return info
+
+
+# Auth example intro...
+
+def verify_token(token:str=Header(None)):
+    if token!= "CyberX":
+        raise HTTPException(
+            status_code=401,
+            detail="Unauthorized"
+        )
+    return{
+        "user":"You are a Authorized user",
+        "name":"Krishna"
+    }
+
+@app.get("/Data_security")
+def secure_data(user=Depends(verify_token)):
+    return{
+        "message":"Secure data accessed",
+        "user":user
+    }
