@@ -248,6 +248,8 @@ def get_use(name:str):
     
 '''
 
+'''
+
 ##### Dependency Injection #####
 # we have to import Depends from fastapi
 
@@ -292,4 +294,8 @@ def secure_data(user=Depends(verify_token)):
     return{
         "message":"Secure data accessed",
         "user":user
-    }
+    } 
+    '''
+
+####### MIDDLEWARE ########
+
