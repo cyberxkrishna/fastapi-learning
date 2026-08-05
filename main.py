@@ -299,3 +299,4 @@ def secure_data(user=Depends(verify_token)):
 
 ####### MIDDLEWARE ########
 
+@app.middleware("http")
