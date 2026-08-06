@@ -308,3 +308,11 @@ async def my_middleware(request:Request,call_next):
     print("Response sent")
     return response
 '''
+
+@app.middleware("https")
+async def log_middleware(request:Request,call_next):
+    start_time=time.time()
+    response= await call_next(request)
+    process_time=time.time()-start_time
+    print(f"Path:{request.url.path}| Time:{process_time}")
+    return response
