@@ -337,4 +337,3 @@ conn.commit()
 def home():
     return "SQlite connected successfully"
 
-
