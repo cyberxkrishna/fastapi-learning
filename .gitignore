@@ -1,0 +1,9 @@
+# Python
+__pycache__/
+*.pyc
+
+# SQLite database
+*.db
+*.db-wal
+*.db-shm
+
