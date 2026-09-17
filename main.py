@@ -342,7 +342,10 @@ def home():
     
     '''
 
-#### SQLALCHEMY
+
+
+'''
+################# SQLALCHEMY
 
 from sqlalchemy import create_engine,Column,Integer,String
 from sqlalchemy.orm import sessionmaker,declarative_base,Session
@@ -385,13 +388,14 @@ def get_db():
     finally:
         db.close()
 
-'''
-@app.get("/todos")
-def get_todos(db:Session=Depends(get_db)):
-    todos=db.query(Todo).all()
-    return todos
-'''
+
+# @app.get("/todos")
+# def get_todos(db:Session=Depends(get_db)):
+#     todos=db.query(Todo).all()
+#     return todos
+
 ########## CREATE IN DATABASE ##########
+
 class TodoCreate(BaseModel):
     id:int
     Name:str
@@ -404,8 +408,61 @@ def create_todo(todo: TodoCreate,db:Session=Depends(get_db)):
         Name=todo.Name,
         complete=todo.complete
     )
-
     db.add(new_todo)
     db.commit()
     db.refresh(new_todo)
     return new_todo
+    
+
+############ READ DATA IN DATABASE ##############
+
+
+@app.get("/todos")
+def read_todo(db:Session=Depends(get_db)):
+    read=db.query(Todo).all()
+    return{
+        "Total":len(read),
+        "data":read
+    }
+#Read data based on id
+@app.get("/todos/{todo_id}")
+def read_todos(todo_id=int,db:Session=Depends(get_db)):
+    read=db.query(Todo).filter(Todo.id==todo_id).first()
+    if not read:
+        raise HTTPException(status_code=404,detail="Todo not found")
+    return read
+
+
+############ UPDATE IN DATABASE ##############
+
+@app.put("/todos/{todo_id}")
+def update_id(todo_id=int,name=str,Complete=str,db:Session=Depends(get_db)):
+    update=db.query(Todo).filter(Todo.id==todo_id).first()
+    if not update:
+        raise HTTPException(status_code=404,detail="Todo not found")
+    
+    update.Name=name
+    update.complete=Complete
+    db.commit()
+    db.refresh(update)
+    return{
+        "Message":"Todo updated",
+        "data":update
+    }
+
+
+############ DELETE IN DATABASE ##############
+@app.delete("/todos/{delete_id}")
+def delete_todo(delete_id:int,db:Session=Depends(get_db)):
+    dele=db.query(Todo).filter(Todo.id==delete_id).first()
+    if not delete_id:
+        raise HTTPException(status_code=404,detail="Todo not found")
+    db.delete(dele)
+    db.commit()
+    return{
+        "Message":"Todo deleted"
+    }
+
+'''
+
+
