@@ -1,7 +1,7 @@
 from fastapi import FastAPI,status,HTTPException,Request,Depends,Header
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
-import time
+
 
 
 
@@ -30,7 +30,7 @@ def user(user_id:int):
 
 @app.get("/user")
 def name(name: str = "hello" ): # we can put any default value but generally null is used like this--- /def name(name: str = None ).
-    return{"username":name} 
+    return{"username":name}
 
 #default
 @app.get("/product")
@@ -104,7 +104,7 @@ class Todo(BaseModel):
 def todo(todo:Todo):
     todos.append(todo)
     return{
-        "massage":"Todo added","data":todo
+        "massage":"Todo added","data":todo 
     }
 
 @app.get("/todos")
@@ -465,4 +465,21 @@ def delete_todo(delete_id:int,db:Session=Depends(get_db)):
 
 '''
 
+########  ASYNCHRONOUS PROGRAMMING ########
+'''
 
+import asyncio
+import time
+
+@app.get("/")
+async def home():
+    await asyncio.sleep(3)
+    return{
+        "Msg":"Async api"
+    }
+    '''
+
+
+########## JWT AUTHENTICATION + TOKEN-BASED AUTH+LOGIN API  ##############
+
+from jose import jwt
