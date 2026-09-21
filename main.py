@@ -99,7 +99,7 @@ class Todo(BaseModel):
     title:str
     completed:bool
 
-
+   
 @app.post("/todos")
 def todo(todo:Todo):
     todos.append(todo)
@@ -483,3 +483,53 @@ async def home():
 ########## JWT AUTHENTICATION + TOKEN-BASED AUTH+LOGIN API  ##############
 
 from jose import jwt
+from datetime import datetime,timedelta,timezone
+
+SECRET_KEY="MYSECRET"
+ALGORITHM="HS256"
+
+
+#create token
+def create_token(data:dict):
+    to_encode=data.copy()
+    expire=datetime.now(timezone.utc)+timedelta(minutes=30)
+    to_encode.update({
+        "exp":expire
+    })
+    token=jwt.encode(to_encode,SECRET_KEY,algorithm=ALGORITHM)
+    return token
+
+#Login API (token)
+
+@app.post("/login")
+def login(username:str,password:str):
+    if username != "admin" or password!="123456":
+        raise HTTPException (
+            status_code=401,detail="Invalid username password"
+        )
+    token=create_token({
+        "sub":username
+    })
+    return{
+        "access_token":token
+    }
+
+#verify token
+
+def verify_token(token:str=Header(None)):
+
+    try:
+        payload=jwt.decode(token,SECRET_KEY,algorithms=[ALGORITHM])
+        return payload
+    except:
+        raise HTTPException (
+            status_code=401,detail="Invalid or expired token"
+        )
+
+# Protected route
+@app.get("/secure")
+def secure_data(user=Depends(verify_token)):
+    return{
+        "Message":"secure data accessed",
+        "user":user
+    }
